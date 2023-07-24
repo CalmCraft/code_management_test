@@ -16,13 +16,11 @@ class MoviesPage extends StatefulWidget {
 }
 
 class _MoviesPageState extends State<MoviesPage> {
-  LocalDB db = LocalDB();
   List<Movie> upcomingMovies = [];
   List<Movie> popularMovies = [];
 
   @override
   void initState() {
-    db.initializeDatabase();
     BlocProvider.of<MovieBloc>(context).add(GetMoviesEvent());
     super.initState();
   }
@@ -47,7 +45,8 @@ class _MoviesPageState extends State<MoviesPage> {
               return Column(
                 children: [
                   FutureBuilder(
-                      future: db.getUpcomingMovies(),
+                      future: SqfliteHelper.instance
+                          .getMoviesByType(MovieType.upcoming),
                       builder: (BuildContext context,
                           AsyncSnapshot<List<StoreMovieObject>> snapshot) {
                         if (snapshot.hasData &&
@@ -67,7 +66,8 @@ class _MoviesPageState extends State<MoviesPage> {
                     height: 12,
                   ),
                   FutureBuilder(
-                      future: db.getPopularMovies(),
+                      future: SqfliteHelper.instance
+                          .getMoviesByType(MovieType.popular),
                       builder: (BuildContext context,
                           AsyncSnapshot<List<StoreMovieObject>> snapshot) {
                         if (snapshot.hasData &&

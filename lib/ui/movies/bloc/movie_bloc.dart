@@ -20,22 +20,20 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
   }
   void _getMovies(GetMoviesEvent event, Emitter emit) async {
     emit(MovieLoadingState());
-    LocalDB db = LocalDB();
-    await db.initializeDatabase();
     try {
       final upcomingMovies =
           await apiService.getUpcomingMovies(Constants.apiKey);
       final popularMovies = await apiService.getPopularMovies(Constants.apiKey);
-      await db.truncateTable();
+      await SqfliteHelper.instance.truncateTable();
       for (var movie in upcomingMovies.results!) {
-        await db.storeMovies(StoreMovieObject(
+        await SqfliteHelper.instance.storeMovies(StoreMovieObject(
           movieId: movie.id,
           movieInfo: jsonEncode(movie.toJson()),
           type: MovieType.upcoming.name,
         ));
       }
       for (var movie in popularMovies.results!) {
-        await db.storeMovies(StoreMovieObject(
+        await SqfliteHelper.instance.storeMovies(StoreMovieObject(
           movieId: movie.id,
           movieInfo: jsonEncode(movie.toJson()),
           type: MovieType.popular.name,

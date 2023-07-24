@@ -8,10 +8,19 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import '../model/movie/movie.dart';
 
-class LocalDB {
-  Database? dataBase;
+class SqfliteHelper {
   final String movieTable = "movies";
   final String favouriteTable = "tblFavourites";
+  Database? _dataBase;
+
+  SqfliteHelper._privateConstructor();
+  static final SqfliteHelper instance = SqfliteHelper._privateConstructor();
+  Future<Database?> get database async {
+    if (_dataBase != null) return _dataBase;
+    _dataBase = await initializeDatabase();
+    return _dataBase;
+  }
+
   Future<Database?> initializeDatabase() async {
     var databasesPath = await getDatabasesPath();
     var path = join(databasesPath, "movies_db.db");
@@ -29,41 +38,21 @@ class LocalDB {
 
       await File(path).writeAsBytes(bytes, flush: true);
     } else {}
-    dataBase = await openDatabase(path, readOnly: false);
-    return dataBase;
+    return openDatabase(path, readOnly: false);
   }
 
   Future<int?> storeMovies(StoreMovieObject movieInfo) async {
-    final db = dataBase;
+    final db = await instance.database;
     int done = await db!.insert(movieTable, movieInfo.toJson());
     return done;
   }
 
-  Future<List<StoreMovieObject>> getUpcomingMovies() async {
-    final db = dataBase;
+  Future<List<StoreMovieObject>> getMoviesByType(MovieType movieType) async {
+    final db = await instance.database;
     List<StoreMovieObject> movieList = [];
     try {
-      List<Map<String, dynamic>> movies = await db!.query(movieTable,
-          where: "type = ?", whereArgs: [MovieType.upcoming.name]);
-      movieList =
-          movies.map((data) => StoreMovieObject.fromJson(data)).toList();
-      for (var movie in movieList) {
-        final decodedString = jsonDecode(movie.movieInfo.toString());
-        movie.movie = Movie.fromJson(decodedString);
-      }
-    } catch (e) {
-      print(e.toString());
-      return [];
-    }
-    return movieList;
-  }
-
-  Future<List<StoreMovieObject>> getPopularMovies() async {
-    final db = dataBase;
-    List<StoreMovieObject> movieList = [];
-    try {
-      List<Map<String, dynamic>> movies = await db!.query(movieTable,
-          where: "type = ?", whereArgs: [MovieType.popular.name]);
+      List<Map<String, dynamic>> movies = await db!
+          .query(movieTable, where: "type = ?", whereArgs: [movieType.name]);
       movieList =
           movies.map((data) => StoreMovieObject.fromJson(data)).toList();
       for (var movie in movieList) {
@@ -78,7 +67,7 @@ class LocalDB {
   }
 
   Future<void> saveFavouriteMovie(FavouriteMovie favouriteMovie) async {
-    final db = dataBase;
+    final db = await instance.database;
 
     await db!.insert(
       favouriteTable,
@@ -87,14 +76,14 @@ class LocalDB {
   }
 
   Future<void> unsaveFavouriteMovie(int movieId) async {
-    final db = dataBase;
+    final db = await instance.database;
 
     await db!
         .delete(favouriteTable, where: "movie_id = ? ", whereArgs: [movieId]);
   }
 
   Future<bool> checkMovieFavourite(int movieId) async {
-    final db = dataBase;
+    final db = await instance.database;
 
     final data = await db!
         .query(favouriteTable, where: "movie_id = ? ", whereArgs: [movieId]);
@@ -107,7 +96,7 @@ class LocalDB {
   }
 
   Future truncateTable() async {
-    final db = dataBase;
+    final db = await instance.database;
 
     await db!.delete(movieTable);
   }

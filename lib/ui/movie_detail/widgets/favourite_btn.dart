@@ -11,7 +11,6 @@ class FavouriteBtn extends StatefulWidget {
 
 class _FavouriteBtnState extends State<FavouriteBtn> {
   bool isFavourite = false;
-  LocalDB localDB = LocalDB();
 
   void _toggleFavouriteFlag() {
     setState(() {
@@ -21,22 +20,24 @@ class _FavouriteBtnState extends State<FavouriteBtn> {
 
   void _updateFavouriteStatus(int isFavourite) {
     if (isFavourite == 1) {
-      localDB.saveFavouriteMovie(
+      SqfliteHelper.instance.saveFavouriteMovie(
           FavouriteMovie(movieId: widget.movieId, isFavourite: 1));
     } else {
-      localDB.unsaveFavouriteMovie(widget.movieId);
+      SqfliteHelper.instance.unsaveFavouriteMovie(widget.movieId);
     }
   }
 
   void _getFavouriteFlag() {
-    localDB
+    SqfliteHelper.instance
         .checkMovieFavourite(widget.movieId)
         .then((value) => setState(() => isFavourite = value));
   }
 
   @override
   void initState() {
-    localDB.initializeDatabase().whenComplete(() => _getFavouriteFlag());
+    SqfliteHelper.instance
+        .initializeDatabase()
+        .whenComplete(() => _getFavouriteFlag());
     super.initState();
   }
 
