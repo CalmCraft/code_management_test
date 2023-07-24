@@ -13,4 +13,7 @@ class MovieLoadedState extends MovieState {
   MovieLoadedState({required this.upcomingMovies, required this.popularMovies});
 }
 
-class MovieErrorState extends MovieState {}
+class MovieErrorState extends MovieState {
+  final String message;
+  MovieErrorState({required this.message});
+}

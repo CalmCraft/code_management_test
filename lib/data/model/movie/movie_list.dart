@@ -1,4 +1,4 @@
-import 'package:code_management_test/data/model/movie.dart';
+import 'package:code_management_test/data/model/movie/movie.dart';
 
 class MovieList {
   List<Movie>? results;

@@ -1,4 +1,4 @@
-import 'package:code_management_test/data/model/movie_list.dart';
+import 'package:code_management_test/data/model/movie/movie_list.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart';

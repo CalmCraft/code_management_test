@@ -1,10 +1,14 @@
+import 'package:code_management_test/data/model/movie/movie.dart';
+
 class StoreMovieObject {
   String? movieInfo;
   int? id;
   int? movieId;
   String? type;
+  Movie? movie;
 
-  StoreMovieObject({this.movieInfo, this.id, this.movieId, this.type});
+  StoreMovieObject(
+      {this.movieInfo, this.id, this.movieId, this.type, this.movie});
 
   StoreMovieObject.fromJson(Map<String, dynamic> json) {
     movieInfo = json['movie_info'];
