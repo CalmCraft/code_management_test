@@ -6,7 +6,7 @@ import 'package:code_management_test/data/model/movie/movie_list.dart';
 import 'package:code_management_test/data/model/movie/store_moive_object.dart';
 import 'package:code_management_test/data/network/api_service.dart';
 import 'package:code_management_test/domain/constants.dart';
-import 'package:code_management_test/ui/movies/view/movie_page.dart';
+import 'package:code_management_test/ui/movies/view/movies_page.dart';
 import 'package:dio/dio.dart';
 import 'package:meta/meta.dart';
 

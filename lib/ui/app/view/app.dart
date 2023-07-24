@@ -22,7 +22,7 @@ class App extends StatelessWidget {
               ],
               child: const MaterialApp(
                 title: "Code Management Test",
-                home: MoviePage(),
+                home: MoviesPage(),
               ),
             );
           },

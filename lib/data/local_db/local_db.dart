@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:code_management_test/data/model/movie/store_moive_object.dart';
+import 'package:code_management_test/data/model/movie_detail/favourite_movie.dart';
 import 'package:code_management_test/ui/movies/movies.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
@@ -10,6 +11,7 @@ import '../model/movie/movie.dart';
 class LocalDB {
   Database? dataBase;
   final String movieTable = "movies";
+  final String favouriteTable = "tblFavourites";
   Future<Database?> initializeDatabase() async {
     var databasesPath = await getDatabasesPath();
     var path = join(databasesPath, "movies_db.db");
@@ -73,6 +75,35 @@ class LocalDB {
       return [];
     }
     return movieList;
+  }
+
+  Future<void> saveFavouriteMovie(FavouriteMovie favouriteMovie) async {
+    final db = dataBase;
+
+    await db!.insert(
+      favouriteTable,
+      favouriteMovie.toJson(),
+    );
+  }
+
+  Future<void> unsaveFavouriteMovie(int movieId) async {
+    final db = dataBase;
+
+    await db!
+        .delete(favouriteTable, where: "movie_id = ? ", whereArgs: [movieId]);
+  }
+
+  Future<bool> checkMovieFavourite(int movieId) async {
+    final db = dataBase;
+
+    final data = await db!
+        .query(favouriteTable, where: "movie_id = ? ", whereArgs: [movieId]);
+    if (data.length == 1) {
+      return true;
+    } else if (data.isEmpty) {
+      return false;
+    }
+    return false;
   }
 
   Future truncateTable() async {
